@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<Title>Web Audio API demo</Title>
+This is a simple demo of Web Audio API. The mic will be used to pick up sound, 
+a delay effect will be applied and then the sound is played through the speakers.<br><br>
+Warning for audio feedback, use headphones to prevent it. Close or reload page to stop the sound.<br>
+<input id="startButton" type="button" value="Start" />
+<input id="soundButton" type="button" value="Generate sound" />
+<script>
+(function() {
+    document.querySelector("#soundButton").addEventListener('click', playSound);
+    function playSound() {
+        var AudioContext = window.AudioContext || window.webkitAudioContext;
+        var audioContext = new AudioContext();
+    
+        var oscillator = audioContext.createOscillator();
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.value = 440;
+        oscillator.start();
+        oscillator.connect(audioContext.destination);
+
+        var oscillator2 = audioContext.createOscillator();
+        oscillator2.type = 'sine';
+        oscillator2.frequency.value = 880;
+        oscillator2.start();
+        oscillator2.connect(audioContext.destination);
+    }
+        
+	navigator.getUserMedia = (navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia);
+	
+    if (navigator.getUserMedia) {
+        
+        document.querySelector("#startButton").addEventListener('click', playMic);
+        
+        function loadAudio( object, url) {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.responseType = 'arraybuffer';
+            
+            request.onload = function() {
+                context.decodeAudioData(request.response, function(buffer) {
+                    object.buffer = buffer;
+                });
+            }
+            request.send();
+        }
+        
+        function gotStream(stream) {
+            var AudioContext = window.AudioContext || window.webkitAudioContext;
+            var audioContext = new AudioContext();
+        
+            var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+            var reverb = audioContext.createConvolver();
+            loadAudio(reverb, 'http://webaudioplayground.appspot.com/sounds/irHall.ogg');
+            
+            /*
+            var biquadFilter = audioContext.createBiquadFilter();
+            biquadFilter.type = "bandpass";
+            //biquadFilter.frequency.value = 500;
+            //biquadFilter.Q.value = 100;
+            //biquadFilter.gain.value = 25;
+            
+            var now = audioContext.currentTime;
+            biquadFilter.frequency.setValueAtTime( 0, now );
+            biquadFilter.frequency.linearRampToValueAtTime( 2000.0, now + 3.0 );
+            biquadFilter.frequency.linearRampToValueAtTime( 0.0, now + 6.0 );
+            biquadFilter.frequency.linearRampToValueAtTime( 2000.0, now + 9.0 );
+            biquadFilter.frequency.linearRampToValueAtTime( 0.0, now + 12.0 );
+            
+            biquadFilter.Q.setValueAtTime( 20.0, now );
+            biquadFilter.Q.linearRampToValueAtTime( 10.0, now + 6 );
+            biquadFilter.Q.setValueAtTime( 20.0, now + 9 );
+            biquadFilter.Q.linearRampToValueAtTime( 10.0, now + 12 );
+            */
+            
+            var delay = audioContext.createDelay();
+            delay.delayTime.value = 3;
+            
+            //mediaStreamSource.connect(biquadFilter);
+            //biquadFilter.connect(delay);
+            mediaStreamSource.connect(reverb);
+            reverb.connect(delay);
+            delay.connect(audioContext.destination);
+        }
+        
+        function playMic() {
+            navigator.getUserMedia( {audio:true}, gotStream, error);
+        }
+        
+        function error(message)
+        {
+            console.log(message);
+        }
+
+    } else {
+        document.querySelector("#startButton").disabled = true;
+        alert("Sorry, you can't use the mic.");
+    }
+  })();
+</script>
+</html>
