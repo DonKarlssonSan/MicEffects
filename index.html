@@ -56,7 +56,7 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
         
             var mediaStreamSource = audioContext.createMediaStreamSource(stream);
             var reverb = audioContext.createConvolver();
-            loadAudio(reverb, 'reverb-ir.wav');
+            loadAudio(reverb, '/reverb-ir.wav');
             
             /*
             var biquadFilter = audioContext.createBiquadFilter();
