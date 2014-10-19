@@ -8,14 +8,12 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
 <input id="soundButton" type="button" value="Generate sound" />
 <script>
 (function() {
-    var audioContext;
+	var AudioContext = window.AudioContext || window.webkitAudioContext;
+	var audioContext = new AudioContext();
 	var reverbIrBuffer;
 	
     document.querySelector("#soundButton").addEventListener('click', playSound);
-    function playSound() {
-        var AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioContext = new AudioContext();
-    
+    function playSound() {    
         var oscillator = audioContext.createOscillator();
         oscillator.type = 'sawtooth';
         oscillator.frequency.value = 440;
@@ -54,10 +52,7 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
         
 		loadAudio(reverbIrBuffer, 'reverb-ir.wav');        
         
-		function gotStream(stream) {
-            var AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioContext = new AudioContext();
-        
+		function gotStream(stream) {        
             var mediaStreamSource = audioContext.createMediaStreamSource(stream);
             var reverb = audioContext.createConvolver();
 			reverb.buffer = reverbIrBuffer;
