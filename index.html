@@ -9,6 +9,7 @@ Warning for audio feedback, use headphones to prevent it.<br>
 (function() {
 	var AudioContext = window.AudioContext || window.webkitAudioContext;
 	var audioContext = new AudioContext();
+	var mediaStreamSource;
 	var reverbIrBuffer;
 	
 	navigator.getUserMedia = (navigator.getUserMedia ||
@@ -37,7 +38,7 @@ Warning for audio feedback, use headphones to prevent it.<br>
 		loadAudio('irHall.ogg');        
         
 		function gotStream(stream) {        
-            var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+            mediaStreamSource = audioContext.createMediaStreamSource(stream);
             var reverb = audioContext.createConvolver();
 			reverb.buffer = reverbIrBuffer;
 
@@ -79,6 +80,7 @@ Warning for audio feedback, use headphones to prevent it.<br>
 			if(this.value === "Start") {
 				navigator.getUserMedia( {audio:true}, gotStream, error);
 			} else {
+				mediaStreamSource.disconnect();
 				document.querySelector("#startStopButton").value = "Start";		
 				console.log("Stopping sound");
 			}
