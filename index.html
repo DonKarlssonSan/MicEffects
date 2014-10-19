@@ -9,6 +9,7 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
 <script>
 (function() {
     var audioContext;
+	var reverbIrBuffer;
 	
     document.querySelector("#soundButton").addEventListener('click', playSound);
     function playSound() {
@@ -44,19 +45,23 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
             
             request.onload = function() {
                 audioContext.decodeAudioData(request.response, function(buffer) {
-                    object.buffer = buffer;
+                    object = buffer;
+					console.log('Sound file downloaded");
                 });
             }
             request.send();
         }
         
-        function gotStream(stream) {
+		loadAudio(reverbIrBuffer, 'reverb-ir.wav');        
+        
+		function gotStream(stream) {
             var AudioContext = window.AudioContext || window.webkitAudioContext;
             audioContext = new AudioContext();
         
             var mediaStreamSource = audioContext.createMediaStreamSource(stream);
             var reverb = audioContext.createConvolver();
-            loadAudio(reverb, 'reverb-ir.wav');
+			reverb.buffer = reverbIrBuffer;
+
             
             /*
             var biquadFilter = audioContext.createBiquadFilter();
