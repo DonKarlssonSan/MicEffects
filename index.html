@@ -46,7 +46,7 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
             request.onload = function() {
                 audioContext.decodeAudioData(request.response, function(buffer) {
                     object = buffer;
-					console.log('Sound file downloaded");
+					console.log('Sound file downloaded');
                 });
             }
             request.send();
