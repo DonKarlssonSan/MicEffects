@@ -36,21 +36,21 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
         
         document.querySelector("#startButton").addEventListener('click', playMic);
         
-        function loadAudio( object, url) {
+        function loadAudio(url) {
             var request = new XMLHttpRequest();
             request.open('GET', url, true);
             request.responseType = 'arraybuffer';
             
             request.onload = function() {
                 audioContext.decodeAudioData(request.response, function(buffer) {
-                    object = buffer;
+                    reverbIrBuffer = buffer;
 					console.log('Sound file downloaded');
                 });
             }
             request.send();
         }
         
-		loadAudio(reverbIrBuffer, 'reverb-ir.wav');        
+		loadAudio('reverb-ir.wav');        
         
 		function gotStream(stream) {        
             var mediaStreamSource = audioContext.createMediaStreamSource(stream);
