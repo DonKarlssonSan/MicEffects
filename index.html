@@ -20,7 +20,7 @@ Warning for audio feedback, use headphones to prevent it.<br>
         navigator.msGetUserMedia);
 	
     if (navigator.getUserMedia) {
-        
+        audioContext = new AudioContext();
         document.querySelector("#startStopButton").addEventListener('click', startStopButton_Clicked);
         
         function loadAudio(url) {
@@ -39,8 +39,10 @@ Warning for audio feedback, use headphones to prevent it.<br>
         
 		loadAudio('irHall.ogg');        
         
-		function gotStream(stream) {      
-			audioContext = new AudioContext()		
+		function gotStream(stream) {
+			if(audioContext === null) {	
+				audioContext = new AudioContext();
+			}
             mediaStreamSource = audioContext.createMediaStreamSource(stream);
             reverb = audioContext.createConvolver();
 			reverb.buffer = reverbIrBuffer;
