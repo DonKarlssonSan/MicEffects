@@ -57,8 +57,13 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
             var reverb = audioContext.createConvolver();
 			reverb.buffer = reverbIrBuffer;
 
+            
+            /*
             var biquadFilter = audioContext.createBiquadFilter();
             biquadFilter.type = "bandpass";
+            //biquadFilter.frequency.value = 500;
+            //biquadFilter.Q.value = 100;
+            //biquadFilter.gain.value = 25;
             
             var now = audioContext.currentTime;
             biquadFilter.frequency.setValueAtTime( 0, now );
@@ -71,13 +76,15 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
             biquadFilter.Q.linearRampToValueAtTime( 10.0, now + 6 );
             biquadFilter.Q.setValueAtTime( 20.0, now + 9 );
             biquadFilter.Q.linearRampToValueAtTime( 10.0, now + 12 );
+            */
             
             var delay = audioContext.createDelay();
             delay.delayTime.value = 3;
             
+            //mediaStreamSource.connect(biquadFilter);
+            //biquadFilter.connect(delay);
             mediaStreamSource.connect(reverb);
-            reverb.connect(biquadFilter);
-			biquadFilter.connect(delay);
+            reverb.connect(delay);
             delay.connect(audioContext.destination);
         }
         
