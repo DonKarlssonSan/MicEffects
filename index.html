@@ -10,6 +10,8 @@ Warning for audio feedback, use headphones to prevent it.<br>
 	var AudioContext = window.AudioContext || window.webkitAudioContext;
 	var audioContext = new AudioContext();
 	var mediaStreamSource;
+	var reverb;
+	var delay;
 	var reverbIrBuffer;
 	
 	navigator.getUserMedia = (navigator.getUserMedia ||
@@ -39,7 +41,7 @@ Warning for audio feedback, use headphones to prevent it.<br>
         
 		function gotStream(stream) {        
             mediaStreamSource = audioContext.createMediaStreamSource(stream);
-            var reverb = audioContext.createConvolver();
+            reverb = audioContext.createConvolver();
 			reverb.buffer = reverbIrBuffer;
 
             
@@ -63,7 +65,7 @@ Warning for audio feedback, use headphones to prevent it.<br>
             biquadFilter.Q.linearRampToValueAtTime( 10.0, now + 12 );
             */
             
-            var delay = audioContext.createDelay();
+            delay = audioContext.createDelay();
             delay.delayTime.value = 3;
             
             //mediaStreamSource.connect(biquadFilter);
@@ -72,20 +74,34 @@ Warning for audio feedback, use headphones to prevent it.<br>
             reverb.connect(delay);
             delay.connect(audioContext.destination);
 			
-			document.querySelector("#startStopButton").value = "Stop";			
+			document.querySelector("#startStopButton").value = "Stop";
+			document.querySelector("#startStopButton").disabled = false;			
         }
         
         function startStopButton_Clicked() {
 			console.log(this.value);
 			if(this.value === "Start") {
+				this.disabled = true;
 				navigator.getUserMedia( {audio:true}, gotStream, error);
 			} else {
-				mediaStreamSource.disconnect();
-				document.querySelector("#startStopButton").value = "Start";		
-				console.log("Stopping sound");
+				stopSound();
 			}
 		}
-        
+				
+		funciton stopSound() {
+			console.log("Stopping sound");
+
+			mediaStreamSource.disconnect();
+			mediaStreamSource = null;
+			reverb.disconnect();
+			reverb = null;
+			delay.disconnect();
+			delay = null;
+			audioContext = null;
+			
+			document.querySelector("#startStopButton").value = "Start";		
+		}
+		
         function error(message)
         {
             console.log(message);
