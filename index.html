@@ -8,7 +8,7 @@ Warning for audio feedback, use headphones to prevent it.<br>
 <script>
 (function() {
 	var AudioContext = window.AudioContext || window.webkitAudioContext;
-	var audioContext = new AudioContext();
+	var audioContext;
 	var mediaStreamSource;
 	var reverb;
 	var delay;
@@ -39,7 +39,8 @@ Warning for audio feedback, use headphones to prevent it.<br>
         
 		loadAudio('irHall.ogg');        
         
-		function gotStream(stream) {        
+		function gotStream(stream) {      
+			audioContext = new AudioContext()		
             mediaStreamSource = audioContext.createMediaStreamSource(stream);
             reverb = audioContext.createConvolver();
 			reverb.buffer = reverbIrBuffer;
