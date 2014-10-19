@@ -1,32 +1,16 @@
 <!DOCTYPE html>
 <html>
-<Title>Web Audio API demo</Title>
-This is a simple demo of Web Audio API. The mic will be used to pick up sound, 
-a delay effect will be applied and then the sound is played through the speakers.<br><br>
-Warning for audio feedback, use headphones to prevent it. Close or reload page to stop the sound.<br>
-<input id="startButton" type="button" value="Start" />
-<input id="soundButton" type="button" value="Generate sound" />
+<Title>Funny talk</Title>
+Apply sound effects to your talk! 
+<br><br>
+Warning for audio feedback, use headphones to prevent it.<br>
+<input id="startStopButton" type="button" value="Start" />
 <script>
 (function() {
 	var AudioContext = window.AudioContext || window.webkitAudioContext;
 	var audioContext = new AudioContext();
 	var reverbIrBuffer;
 	
-    document.querySelector("#soundButton").addEventListener('click', playSound);
-    function playSound() {    
-        var oscillator = audioContext.createOscillator();
-        oscillator.type = 'sawtooth';
-        oscillator.frequency.value = 440;
-        oscillator.start();
-        oscillator.connect(audioContext.destination);
-
-        var oscillator2 = audioContext.createOscillator();
-        oscillator2.type = 'sine';
-        oscillator2.frequency.value = 880;
-        oscillator2.start();
-        oscillator2.connect(audioContext.destination);
-    }
-        
 	navigator.getUserMedia = (navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
@@ -34,7 +18,7 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
 	
     if (navigator.getUserMedia) {
         
-        document.querySelector("#startButton").addEventListener('click', playMic);
+        document.querySelector("#startStopButton").addEventListener('click', startStopButton_Clicked);
         
         function loadAudio(url) {
             var request = new XMLHttpRequest();
@@ -86,11 +70,19 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
             mediaStreamSource.connect(reverb);
             reverb.connect(delay);
             delay.connect(audioContext.destination);
+			
+			document.querySelector("#startStopButton").value = "Stop";			
         }
         
-        function playMic() {
-            navigator.getUserMedia( {audio:true}, gotStream, error);
-        }
+        function startStopButton_Clicked() {
+			console.log(this.value);
+			if(this.value === "Start") {
+				navigator.getUserMedia( {audio:true}, gotStream, error);
+			} else {
+				document.querySelector("#startStopButton").value = "Start";		
+				console.log("Stopping sound");
+			}
+		}
         
         function error(message)
         {
@@ -98,8 +90,8 @@ Warning for audio feedback, use headphones to prevent it. Close or reload page t
         }
 
     } else {
-        document.querySelector("#startButton").disabled = true;
-        alert("Sorry, you can't use the mic.");
+        document.querySelector("#startStopButton").disabled = true;
+        alert("Sorry, you can't use the mic in this web browser. Try latest version of Firefox, Chrome or Safari.");
     }
   })();
 </script>
