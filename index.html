@@ -4,15 +4,16 @@
 Apply sound effects to your talk! 
 <br><br>
 Warning for audio feedback, use headphones to prevent it.<br>
-<input id="startStopButton" type="button" value="Start" />
+<input id="startStopButton" type="button" value="Start" /><br>
+Select a sound effect:<br>
+<input id="echo" type="radio" name="effect" value="HandClapEcho.ogg" checked>Echo<br>
+<input id="cathedral" type="radio" name="effect" value="DonKarlssonSanImpulseResponse.ogg">Cathedral
 <script>
 (function() {
 	var AudioContext = window.AudioContext || window.webkitAudioContext;
 	var audioContext;
 	var mediaStreamSource;
-	var reverb;
-	var delay;
-	var reverbIrBuffer;
+	var soundBuffers = [];
 	
 	navigator.getUserMedia = (navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
@@ -22,7 +23,9 @@ Warning for audio feedback, use headphones to prevent it.<br>
     if (navigator.getUserMedia) {
         audioContext = new AudioContext();
         document.querySelector("#startStopButton").addEventListener('click', startStopButton_Clicked);
-        
+        document.querySelector('input[id="echo"]').addEventListener('change', changeEffect);
+        document.querySelector('input[id="cathedral"]').addEventListener('change', changeEffect);
+		
         function loadAudio(url) {
             var request = new XMLHttpRequest();
             request.open('GET', url, true);
@@ -30,14 +33,15 @@ Warning for audio feedback, use headphones to prevent it.<br>
             
             request.onload = function() {
                 audioContext.decodeAudioData(request.response, function(buffer) {
-                    reverbIrBuffer = buffer;
+                    soundBuffers[url] = buffer;
 					console.log('Sound file downloaded');
                 });
             }
             request.send();
         }
         
-		loadAudio('DonKarlssonSanImpulseResponse.ogg');        
+		loadAudio('DonKarlssonSanImpulseResponse.ogg');
+		loadAudio('HandClapEcho.ogg');
         
 		function gotStream(stream) {
 			if(audioContext === null) {	
@@ -45,34 +49,11 @@ Warning for audio feedback, use headphones to prevent it.<br>
 			}
             mediaStreamSource = audioContext.createMediaStreamSource(stream);
             reverb = audioContext.createConvolver();
-			reverb.buffer = reverbIrBuffer;
+			reverb.buffer = soundBuffers[document.querySelector('input[name="effect"]:checked').value];
 
-            
-            /*
-            var biquadFilter = audioContext.createBiquadFilter();
-            biquadFilter.type = "bandpass";
-            //biquadFilter.frequency.value = 500;
-            //biquadFilter.Q.value = 100;
-            //biquadFilter.gain.value = 25;
-            
-            var now = audioContext.currentTime;
-            biquadFilter.frequency.setValueAtTime( 0, now );
-            biquadFilter.frequency.linearRampToValueAtTime( 2000.0, now + 3.0 );
-            biquadFilter.frequency.linearRampToValueAtTime( 0.0, now + 6.0 );
-            biquadFilter.frequency.linearRampToValueAtTime( 2000.0, now + 9.0 );
-            biquadFilter.frequency.linearRampToValueAtTime( 0.0, now + 12.0 );
-            
-            biquadFilter.Q.setValueAtTime( 20.0, now );
-            biquadFilter.Q.linearRampToValueAtTime( 10.0, now + 6 );
-            biquadFilter.Q.setValueAtTime( 20.0, now + 9 );
-            biquadFilter.Q.linearRampToValueAtTime( 10.0, now + 12 );
-            */
-            
             delay = audioContext.createDelay();
             delay.delayTime.value = 3;
             
-            //mediaStreamSource.connect(biquadFilter);
-            //biquadFilter.connect(delay);
             mediaStreamSource.connect(reverb);
             reverb.connect(delay);
             delay.connect(audioContext.destination);
@@ -105,14 +86,18 @@ Warning for audio feedback, use headphones to prevent it.<br>
 			document.querySelector("#startStopButton").value = "Start";		
 		}
 		
-        function error(message)
-        {
+		function changeEffect() {
+			console.log(this.value);
+			reverb.buffer = soundBuffers[this.value];
+		}
+		
+        function error(message) {
             console.log(message);
         }
 
     } else {
         document.querySelector("#startStopButton").disabled = true;
-        alert("Sorry, you can't use the mic in this web browser. Try latest version of Firefox, Chrome or Safari.");
+        alert("Sorry, you can't use the mic in this web browser. Try the latest version of Firefox, Chrome or Opera.");
     }
   })();
 </script>
