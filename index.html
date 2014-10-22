@@ -7,7 +7,8 @@ Warning for audio feedback, use headphones to prevent it.<br>
 <input id="startStopButton" type="button" value="Start" /><br>
 Select a sound effect:<br>
 <input id="echo" type="radio" name="effect" value="HandClapEcho.ogg" checked>Echo<br>
-<input id="cathedral" type="radio" name="effect" value="DonKarlssonSanImpulseResponse.ogg">Cathedral
+<input id="cathedral" type="radio" name="effect" value="DonKarlssonSanImpulseResponse.ogg">Cathedral<br>
+<input id="spring" type="radio" name="effect" value="Spring.ogg">Spring<br>
 <script>
 (function() {
 	var AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -25,6 +26,7 @@ Select a sound effect:<br>
         document.querySelector("#startStopButton").addEventListener('click', startStopButton_Clicked);
         document.querySelector('input[id="echo"]').addEventListener('change', changeEffect);
         document.querySelector('input[id="cathedral"]').addEventListener('change', changeEffect);
+        document.querySelector('input[id="spring"]').addEventListener('change', changeEffect);
 		
         function loadAudio(url) {
             var request = new XMLHttpRequest();
@@ -42,6 +44,7 @@ Select a sound effect:<br>
         
 		loadAudio('DonKarlssonSanImpulseResponse.ogg');
 		loadAudio('HandClapEcho.ogg');
+		loadAudio('Spring.ogg');
         
 		function gotStream(stream) {
 			if(audioContext === null) {	
