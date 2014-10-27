@@ -1,107 +1,111 @@
 <!DOCTYPE html>
 <html>
-<Title>Funny talk</Title>
-Apply sound effects to your talk! 
-<br><br>
-Warning for audio feedback, use headphones to prevent it.<br>
-<input id="startStopButton" type="button" value="Start" /><br>
-Select a sound effect:<br>
-<input id="echo" type="radio" name="effect" value="HandClapEcho.ogg" checked>Echo<br>
-<input id="cathedral" type="radio" name="effect" value="DonKarlssonSanImpulseResponse.ogg">Cathedral<br>
-<input id="spring" type="radio" name="effect" value="Spring.ogg">Spring<br>
-<script>
-(function() {
-	var AudioContext = window.AudioContext || window.webkitAudioContext;
-	var audioContext;
-	var mediaStreamSource;
-	var soundBuffers = [];
-	
-	navigator.getUserMedia = (navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia ||
-        navigator.msGetUserMedia);
-	
-    if (navigator.getUserMedia) {
-        audioContext = new AudioContext();
-        document.querySelector("#startStopButton").addEventListener('click', startStopButton_Clicked);
-        document.querySelector('input[id="echo"]').addEventListener('change', changeEffect);
-        document.querySelector('input[id="cathedral"]').addEventListener('change', changeEffect);
-        document.querySelector('input[id="spring"]').addEventListener('change', changeEffect);
-		
-        function loadAudio(url) {
-            var request = new XMLHttpRequest();
-            request.open('GET', url, true);
-            request.responseType = 'arraybuffer';
-            
-            request.onload = function() {
-                audioContext.decodeAudioData(request.response, function(buffer) {
-                    soundBuffers[url] = buffer;
-					console.log('Sound file downloaded');
-                });
-            }
-            request.send();
-        }
-        
-		loadAudio('DonKarlssonSanImpulseResponse.ogg');
-		loadAudio('HandClapEcho.ogg');
-		loadAudio('Spring.ogg');
-        
-		function gotStream(stream) {
-			if(audioContext === null) {	
+	<head>
+		<Title>Funny talk</Title>
+	</head>
+	<body>
+		Apply sound effects to your talk! 
+		<br><br>
+		Warning for audio feedback, use headphones to prevent it.<br>
+		<input id="startStopButton" type="button" value="Start" /><br>
+		Select a sound effect:<br>
+		<input id="echo" type="radio" name="effect" value="HandClapEcho.ogg" checked>Echo<br>
+		<input id="cathedral" type="radio" name="effect" value="DonKarlssonSanImpulseResponse.ogg">Cathedral<br>
+		<input id="spring" type="radio" name="effect" value="Spring.ogg">Spring<br>
+		<script>
+		(function() {
+			var AudioContext = window.AudioContext || window.webkitAudioContext;
+			var audioContext;
+			var mediaStreamSource;
+			var soundBuffers = [];
+			
+			navigator.getUserMedia = (navigator.getUserMedia ||
+				navigator.webkitGetUserMedia ||
+				navigator.mozGetUserMedia ||
+				navigator.msGetUserMedia);
+			
+			if (navigator.getUserMedia) {
 				audioContext = new AudioContext();
-			}
-            mediaStreamSource = audioContext.createMediaStreamSource(stream);
-            reverb = audioContext.createConvolver();
-			reverb.buffer = soundBuffers[document.querySelector('input[name="effect"]:checked').value];
-
-            delay = audioContext.createDelay();
-            delay.delayTime.value = 3;
-            
-            mediaStreamSource.connect(reverb);
-            reverb.connect(delay);
-            delay.connect(audioContext.destination);
-			
-			document.querySelector("#startStopButton").value = "Stop";
-			document.querySelector("#startStopButton").disabled = false;			
-        }
-        
-        function startStopButton_Clicked() {
-			console.log(this.value);
-			if(this.value === "Start") {
-				this.disabled = true;
-				navigator.getUserMedia( {audio:true}, gotStream, error);
-			} else {
-				stopSound();
-			}
-		}
+				document.querySelector("#startStopButton").addEventListener('click', startStopButton_Clicked);
+				document.querySelector('input[id="echo"]').addEventListener('change', changeEffect);
+				document.querySelector('input[id="cathedral"]').addEventListener('change', changeEffect);
+				document.querySelector('input[id="spring"]').addEventListener('change', changeEffect);
 				
-		function stopSound() {
-			console.log("Stopping sound");
+				function loadAudio(url) {
+					var request = new XMLHttpRequest();
+					request.open('GET', url, true);
+					request.responseType = 'arraybuffer';
+					
+					request.onload = function() {
+						audioContext.decodeAudioData(request.response, function(buffer) {
+							soundBuffers[url] = buffer;
+							console.log('Sound file downloaded');
+						});
+					}
+					request.send();
+				}
+				
+				loadAudio('DonKarlssonSanImpulseResponse.ogg');
+				loadAudio('HandClapEcho.ogg');
+				loadAudio('Spring.ogg');
+				
+				function gotStream(stream) {
+					if(audioContext === null) {	
+						audioContext = new AudioContext();
+					}
+					mediaStreamSource = audioContext.createMediaStreamSource(stream);
+					reverb = audioContext.createConvolver();
+					reverb.buffer = soundBuffers[document.querySelector('input[name="effect"]:checked').value];
 
-			mediaStreamSource.disconnect();
-			mediaStreamSource = null;
-			reverb.disconnect();
-			reverb = null;
-			delay.disconnect();
-			delay = null;
-			audioContext = null;
-			
-			document.querySelector("#startStopButton").value = "Start";		
-		}
-		
-		function changeEffect() {
-			console.log(this.value);
-			reverb.buffer = soundBuffers[this.value];
-		}
-		
-        function error(message) {
-            console.log(message);
-        }
+					delay = audioContext.createDelay();
+					delay.delayTime.value = 3;
+					
+					mediaStreamSource.connect(reverb);
+					reverb.connect(delay);
+					delay.connect(audioContext.destination);
+					
+					document.querySelector("#startStopButton").value = "Stop";
+					document.querySelector("#startStopButton").disabled = false;			
+				}
+				
+				function startStopButton_Clicked() {
+					console.log(this.value);
+					if(this.value === "Start") {
+						this.disabled = true;
+						navigator.getUserMedia( {audio:true}, gotStream, error);
+					} else {
+						stopSound();
+					}
+				}
+						
+				function stopSound() {
+					console.log("Stopping sound");
 
-    } else {
-        document.querySelector("#startStopButton").disabled = true;
-        alert("Sorry, you can't use the mic in this web browser. Try the latest version of Firefox, Chrome or Opera.");
-    }
-  })();
-</script>
+					mediaStreamSource.disconnect();
+					mediaStreamSource = null;
+					reverb.disconnect();
+					reverb = null;
+					delay.disconnect();
+					delay = null;
+					audioContext = null;
+					
+					document.querySelector("#startStopButton").value = "Start";		
+				}
+				
+				function changeEffect() {
+					console.log(this.value);
+					reverb.buffer = soundBuffers[this.value];
+				}
+				
+				function error(message) {
+					console.log(message);
+				}
+
+			} else {
+				document.querySelector("#startStopButton").disabled = true;
+				alert("Sorry, you can't use the mic in this web browser. Try the latest version of Firefox, Chrome or Opera.");
+			}
+		})();
+		</script>
+	</body>
 </html>
