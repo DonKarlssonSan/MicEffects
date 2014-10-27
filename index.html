@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<Title>Funny talk</Title>
-	</head>
+		<title>Funny talk</title>
+        <link rel="stylesheet" href="css/fontello.css">
+		<link rel="stylesheet" href="css/style.css">
+ 	</head>
 	<body>
-		Apply sound effects to your talk! 
-		<br><br>
-		Warning for audio feedback, use headphones to prevent it.<br>
-		<input id="startStopButton" type="button" value="Start" /><br>
-		Select a sound effect:<br>
-		<input id="echo" type="radio" name="effect" value="HandClapEcho.ogg" checked>Echo<br>
-		<input id="cathedral" type="radio" name="effect" value="DonKarlssonSanImpulseResponse.ogg">Cathedral<br>
-		<input id="spring" type="radio" name="effect" value="Spring.ogg">Spring<br>
+		<div class="top-container">
+			<h1>Apply sound effects to your talk!</h1>
+			<h2>Warning for audio feedback, use headphones to prevent it.<br></h2>
+			<br>
+			Select a sound effect (can be changed at any time):<br>
+			<input id="echo" type="radio" name="effect" value="HandClapEcho.ogg" checked>Echo<br>
+			<input id="cathedral" type="radio" name="effect" value="DonKarlssonSanImpulseResponse.ogg">Cathedral<br>
+			<input id="spring" type="radio" name="effect" value="Spring.ogg">Spring<br>		
+		</div>
+
+		<div class="button-border">
+			<i id="startStopButtonIcon" class="icon-mic"></i>
+			<input id="startStopButton" type="button" title="Start" />
+		</div>
+
 		<script>
 		(function() {
 			var AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -64,13 +73,15 @@
 					reverb.connect(delay);
 					delay.connect(audioContext.destination);
 					
-					document.querySelector("#startStopButton").value = "Stop";
+					document.querySelector("#startStopButton").title = "Stop";
 					document.querySelector("#startStopButton").disabled = false;			
+					document.querySelector("#startStopButtonIcon").classList.toggle("icon-mic");
+					document.querySelector("#startStopButtonIcon").classList.toggle("icon-mute");
 				}
 				
 				function startStopButton_Clicked() {
-					console.log(this.value);
-					if(this.value === "Start") {
+					console.log(this.title);
+					if(this.title === "Start") {
 						this.disabled = true;
 						navigator.getUserMedia( {audio:true}, gotStream, error);
 					} else {
@@ -89,7 +100,9 @@
 					delay = null;
 					audioContext = null;
 					
-					document.querySelector("#startStopButton").value = "Start";		
+					document.querySelector("#startStopButton").title = "Start";		
+					document.querySelector("#startStopButtonIcon").classList.toggle("icon-mic");
+					document.querySelector("#startStopButtonIcon").classList.toggle("icon-mute");
 				}
 				
 				function changeEffect() {
